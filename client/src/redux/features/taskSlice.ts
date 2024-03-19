@@ -1,53 +1,37 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { TTask } from "../../types";
-import axios from "axios";
 
-type InitialState = {
-  loading: boolean;
+type TaskState = {
   tasks: TTask[];
-  error: string;
 };
 
-const initialState: InitialState = {
-  loading: false,
+const initialState: TaskState = {
   tasks: [],
-  error: "",
 };
-
-const URL = import.meta.env.VITE_APP_URL;
-
-export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
-  return await axios.get(`${URL}/tasks`).then((response) => {
-    const { task } = response.data;
-    return task;
-  });
-});
 
 const taskSlice = createSlice({
-  name: "task",
+  name: "tasks",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(fetchTasks.pending, (state) => {
-      state.loading = true;
-    });
-    builder.addCase(
-      fetchTasks.fulfilled,
-      (state, action: PayloadAction<TTask[]>) => {
-        state.loading = false;
-        state.tasks = action.payload;
-        state.error = "";
+  reducers: {
+    addStateTask: (state, action: PayloadAction<TTask>) => {
+      console.log("Task added 2");
+      state.tasks.push(action.payload);
+    },
+    updateStateTask: (state, action: PayloadAction<TTask>) => {
+      const { _id, name } = action.payload;
+      const existingTask = state.tasks.find((task) => task._id === _id);
+
+      if (existingTask) {
+        existingTask.name = name;
       }
-    );
-    builder.addCase(fetchTasks.rejected, (state, action) => {
-      state.loading = false;
-      state.tasks = [];
-      state.error = action.error.message || "Something went wrong";
-    });
+    },
+    deleteStateTask: (state, action: PayloadAction<string>) => {
+      state.tasks = state.tasks.filter((task) => task._id !== action.payload);
+    },
   },
 });
 
-// export const selectAllTasks = (state: RootState) => state.task.tasks;
+export const { addStateTask, updateStateTask, deleteStateTask } =
+  taskSlice.actions;
 export default taskSlice.reducer;
-// export const { setTasks } = taskSlice.actions;

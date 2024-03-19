@@ -1,7 +1,7 @@
 import React, { FormEvent, useState } from "react";
 
 import axios from "axios";
-import { fetchTasks } from "../redux/features/taskSlice";
+import { fetchTasks } from "../redux/features/taskAPISlice";
 import { useAppDispatch } from "../redux/hooks";
 
 type EditFormProp = {
@@ -48,10 +48,6 @@ const EditForm = ({ id, value, setEditTask }: EditFormProp) => {
             Update
           </button>
         </div>
-        {/* {taskAdded && <p className="text-green-400">Task Added Successfully</p>}
-        {taskAdded === false && (
-          <p className="text-red-500">Task adding failed, Please try again</p>
-        )} */}
       </div>
     </form>
   );

@@ -1,30 +1,22 @@
 import { FormEvent, useState } from "react";
 
-import axios from "axios";
+import { addStateTask } from "../redux/features/taskSlice";
+import { createTask } from "../api";
+import { fetchTasks } from "../redux/features/taskAPISlice";
+import { useAppDispatch } from "../redux/hooks";
 
-type TaskFormProps = {
-  onTaskAdded: () => void; // Callback function to be called after adding a task
-};
-
-const TaskForm = ({ onTaskAdded }: TaskFormProps) => {
-  const URL = import.meta.env.VITE_APP_URL;
-
+const TaskForm = () => {
   const [name, SetName] = useState<string>("");
   const [taskAdded, setTaskAdded] = useState<boolean>();
+  const dispatch = useAppDispatch();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    try {
-      await axios.post(`${URL}/tasks`, { name });
-      console.log("Task added succesfully");
-      setTaskAdded(true);
-      onTaskAdded();
-      // dispatch(fetchTasks());
-      SetName("");
-    } catch (error) {
-      console.log(error);
-      setTaskAdded(false);
-    }
+    await createTask(name);
+    dispatch(addStateTask({ _id: "", name, completed: false }));
+    setTaskAdded(true);
+    SetName("");
+    dispatch(fetchTasks());
   }
 
   return (

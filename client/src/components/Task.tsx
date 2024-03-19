@@ -1,9 +1,10 @@
 import { SquarePen, Trash2 } from "lucide-react";
-import { deleteTask, updateTaskComplete } from "../api";
+import { deleteTask, updateTask } from "../api";
 
 import EditForm from "./EditForm";
 import { TTask } from "../types";
-import { fetchTasks } from "../redux/features/taskSlice";
+import { deleteStateTask } from "../redux/features/taskSlice";
+import { fetchTasks } from "../redux/features/taskAPISlice";
 import { useAppDispatch } from "../redux/hooks";
 import { useState } from "react";
 
@@ -15,15 +16,14 @@ const Task = ({ task }: { task: TTask }) => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setIsChecked(event.target.checked);
-    await updateTaskComplete(task._id, task.name, event.target.checked);
+    await updateTask(task._id, task.name, event.target.checked);
   };
 
   function handleDeleteTask() {
     deleteTask(task._id);
     dispatch(fetchTasks());
+    dispatch(deleteStateTask(task._id));
   }
-
-  console.log({ isChecked });
 
   return (
     <>
@@ -40,7 +40,6 @@ const Task = ({ task }: { task: TTask }) => {
               checked={isChecked}
             />
             <h2
-              // className={`text-slate-300 ${task.completed && "line-through"} `}
               className={`text-slate-300 ${
                 isChecked && "line-through text-gray-400"
               } `}
